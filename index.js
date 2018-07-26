@@ -157,6 +157,7 @@ ads1x15.prototype.readADCSingleEnded = function(channel, pga, sps, callback) {
     {
       self.busy = false;
       callback("Error: Channel must be between 0 and 3");
+      return;
     }
 
   // Disable comparator, Non-latching, Alert/Rdy active low
@@ -174,7 +175,6 @@ ads1x15.prototype.readADCSingleEnded = function(channel, pga, sps, callback) {
       {
         config |= spsADS1015[sps];
       }
-      else callback("ADS1x15: Invalid sps specified");
     }
     else
     {
@@ -182,6 +182,7 @@ ads1x15.prototype.readADCSingleEnded = function(channel, pga, sps, callback) {
       {
         self.busy = false;
         callback("ADS1x15: Invalid sps specified");
+        return;
       }
       else
       {
@@ -193,6 +194,7 @@ ads1x15.prototype.readADCSingleEnded = function(channel, pga, sps, callback) {
     {
       self.busy = false;
       callback("ADS1x15: Invalid pga specified");
+      return;
     }
     else
     {
@@ -229,6 +231,7 @@ ads1x15.prototype.readADCSingleEnded = function(channel, pga, sps, callback) {
         self.busy = false;
         console.log("We've got an Error, Lance Constable Carrot!: " + err.toString());
         callback(err);
+        return;
       }
 
       // Wait for the ADC conversion to complete
@@ -243,6 +246,7 @@ ads1x15.prototype.readADCSingleEnded = function(channel, pga, sps, callback) {
             self.busy = false;
             console.log("We've got an Error, Lance Constable Carrot!: " + err.toString());
             callback(err);
+            return;
           }
           var data = -0.1;
           if (self.ic == IC_ADS1015)
@@ -334,6 +338,7 @@ ads1x15.prototype.readADCDifferential = function(chP, chN, pga, sps, callback) {
       self.busy = false;
       console.log( "ADS1x15: Invalid channels specified");
       callback("ADS1x15: Invalid channels specified");
+      return;
     }
 
     // Set sample per seconds, defaults to 250sps
@@ -343,12 +348,13 @@ ads1x15.prototype.readADCDifferential = function(chP, chN, pga, sps, callback) {
     {
       config |= spsADS1015[sps];
     }
-      else
-      {
+    else
+    {
       if (!(spsADS1115[sps]))
       {
         self.busy = false;
         callback("ADS1x15: Invalid pga specified");
+        return;
       }
       else
       {
@@ -360,6 +366,7 @@ ads1x15.prototype.readADCDifferential = function(chP, chN, pga, sps, callback) {
     {
       self.busy = false;
       callback("ADS1x15: Invalid pga specified");
+      return;
     }
     else
     {
@@ -375,6 +382,7 @@ ads1x15.prototype.readADCDifferential = function(chP, chN, pga, sps, callback) {
       {
         self.busy = false;
         callback("We've got an Error, Lance Constable Carrot!: " + err.toString());
+        return;
       }
     });
     // Wait for the ADC conversion to complete
@@ -385,6 +393,14 @@ ads1x15.prototype.readADCDifferential = function(chP, chN, pga, sps, callback) {
 
     setTimeout(function() {
       self.wire.readBytes(ADS1015_REG_POINTER_CONVERT, 2, function(err, res) {
+        if(err)
+        {
+          self.busy = false;
+          console.log("ADS1x15 readADCDifferential(): " + err.toString());
+          callback(err);
+          return;
+        }
+
         if (self.ic == IC_ADS1015)
         {        
           // Shift right 4 bits for the 12-bit ADS1015 and convert to mV
@@ -506,6 +522,7 @@ ads1x15.prototype.startContinuousConversion = function(channel, pga, sps, callba
     {
       self.busy = false;
       callback( "ADS1x15: Invalid channel specified, Lance Corporal Carrot!");
+      return;
     }
 
     // Disable comparator, Non-latching, Alert/Rdy active low
@@ -529,6 +546,7 @@ ads1x15.prototype.startContinuousConversion = function(channel, pga, sps, callba
       {
         self.busy = false;
         callback("ADS1x15: Invalid sps specified");
+        return;
       }
       else
       {
@@ -540,6 +558,7 @@ ads1x15.prototype.startContinuousConversion = function(channel, pga, sps, callba
     {
       self.busy = false;
       callback("ADS1x15: Invalid pga specified");
+      return;
     }
     else
     {
@@ -578,6 +597,7 @@ ads1x15.prototype.startContinuousConversion = function(channel, pga, sps, callba
       {
         self.busy = false;
         callback("We've got an Error, Lance Constable Carrot!: " + err.toString());
+        return;
       }
     });
     // Wait for the ADC conversion to complete
@@ -587,6 +607,14 @@ ads1x15.prototype.startContinuousConversion = function(channel, pga, sps, callba
     delay = 1000 / sps + 1;
     setTimeout(function() {
       self.wire.readBytes(ADS1015_REG_POINTER_CONVERT, 2, function(err, res) {
+        if(err)
+        {
+          self.busy = false;
+          console.log("ADS1x15: startContinuousConversion: " + err.toString());
+          callback(err);
+          return;
+        }
+
         if (this.ic == IC_ADS1015)
         {
           // Shift right 4 bits for the 12-bit ADS1015 and convert to mV
@@ -647,6 +675,14 @@ ads1x15.prototype.getLastConversionResults = function(callback) {
 
   // Read the conversion results
   this.wire.readBytes(ADS1015_REG_POINTER_CONVERT, 2, function(err, res) {
+    if(err)
+    {
+      self.busy = false;
+      console.log("ADS1x15: Error getLastConversionResults(): " + err.toString());
+      callback(err);
+      return;
+    }
+
     if (this.ic == IC_ADS1015)
     {
       // Shift right 4 bits for the 12-bit ADS1015 and convert to mV
@@ -708,6 +744,7 @@ ads1x15.prototype.startSingleEndedComparator = function(channel, thresholdHigh, 
        self.busy = false;
        console.log("ADS1x15: Invalid channel specified");
        callback("ADS1x15: Invalid channel specified");
+       return;
     }
 
     // Continuous mode
@@ -757,6 +794,7 @@ ads1x15.prototype.startSingleEndedComparator = function(channel, thresholdHigh, 
       {
         self.busy = false;
         callback("ADS1x15: Invalid sps specified");
+        return;
       }
       config |= spsADS1015[sps];
     }
@@ -766,6 +804,7 @@ ads1x15.prototype.startSingleEndedComparator = function(channel, thresholdHigh, 
       {
         self.busy = false;
         callback("ADS1x15: Invalid sps specified");
+        return;
       }
       config |= spsADS1115[sps];
     }
@@ -774,6 +813,7 @@ ads1x15.prototype.startSingleEndedComparator = function(channel, thresholdHigh, 
     {
       self.busy = false;
       callback("ADS1x15: Invalid pga specified");
+      return;
     }
     config |= pgaADS1x15[pga];
     this.pga = pga
@@ -936,6 +976,7 @@ ads1x15.prototype.startDifferentialComparator = function(chP, chN, thresholdHigh
       {
         self.busy = false;
         callback("ADS1x15: Invalid sps specified");
+        return;
       }
       config |= spsADS1015[sps];
     }
@@ -945,6 +986,7 @@ ads1x15.prototype.startDifferentialComparator = function(chP, chN, thresholdHigh
       {
         self.busy = false;
         callback("ADS1x15: Invalid sps specified");
+        return;
       }
       config |= spsADS1115[sps];
     }
@@ -954,6 +996,7 @@ ads1x15.prototype.startDifferentialComparator = function(chP, chN, thresholdHigh
     {
       self.busy = false;
        callback("ADS1x15: Invalid pga specified");
+       return;
     }
     config |= pgaADS1x15[pga];
     this.pga = pga;
@@ -979,6 +1022,7 @@ ads1x15.prototype.startDifferentialComparator = function(chP, chN, thresholdHigh
     {
       self.busy = false;
       callback("ADS1x15: Invalid channels specified");
+      return;
     }
     // Set 'start single-conversion' bit to begin conversions
     config |= ADS1015_REG_CONFIG_OS_SINGLE;
