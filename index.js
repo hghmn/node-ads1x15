@@ -122,7 +122,7 @@ function ads1x15(ic, address, i2c_dev) {
   }
   if(!(ic == IC_ADS1015 | ic == IC_ADS1115))
   {
-    throw "Error: not a supported device";
+    throw new Error("Error: not a supported device");
   }
   this.ic = ic; // 0 for ads1015, 1 for ads1115;
   this.address = address; //defaults to 0x48 for addr pin tied to ground
@@ -156,7 +156,7 @@ ads1x15.prototype.readADCSingleEnded = function(channel, pga, sps, callback) {
     if(channel > 3 || channel < 0)
     {
       self.busy = false;
-      callback("Error: Channel must be between 0 and 3");
+      callback(new Error("Error: Channel must be between 0 and 3"));
       return;
     }
 
@@ -181,7 +181,7 @@ ads1x15.prototype.readADCSingleEnded = function(channel, pga, sps, callback) {
       if (!(spsADS1115[sps]))
       {
         self.busy = false;
-        callback("ADS1x15: Invalid sps specified");
+        callback(new Error("ADS1x15: Invalid sps specified"));
         return;
       }
       else
@@ -193,7 +193,7 @@ ads1x15.prototype.readADCSingleEnded = function(channel, pga, sps, callback) {
     if (!(pgaADS1x15[pga]))
     {
       self.busy = false;
-      callback("ADS1x15: Invalid pga specified");
+      callback(new Error("ADS1x15: Invalid pga specified"));
       return;
     }
     else
@@ -282,7 +282,7 @@ ads1x15.prototype.readADCSingleEnded = function(channel, pga, sps, callback) {
   }
   else
   {
-    callback("ADC is busy...");
+    callback(new Error("ADC is busy..."));
   }
 
 }
@@ -337,7 +337,7 @@ ads1x15.prototype.readADCDifferential = function(chP, chN, pga, sps, callback) {
     {
       self.busy = false;
       console.log( "ADS1x15: Invalid channels specified");
-      callback("ADS1x15: Invalid channels specified");
+      callback(new Error("ADS1x15: Invalid channels specified"));
       return;
     }
 
@@ -353,7 +353,7 @@ ads1x15.prototype.readADCDifferential = function(chP, chN, pga, sps, callback) {
       if (!(spsADS1115[sps]))
       {
         self.busy = false;
-        callback("ADS1x15: Invalid pga specified");
+        callback(new Error("ADS1x15: Invalid pga specified"));
         return;
       }
       else
@@ -365,7 +365,7 @@ ads1x15.prototype.readADCDifferential = function(chP, chN, pga, sps, callback) {
     if (!(pgaADS1x15[pga]))
     {
       self.busy = false;
-      callback("ADS1x15: Invalid pga specified");
+      callback(new Error("ADS1x15: Invalid pga specified"));
       return;
     }
     else
@@ -381,7 +381,8 @@ ads1x15.prototype.readADCDifferential = function(chP, chN, pga, sps, callback) {
       if(err)
       {
         self.busy = false;
-        callback("We've got an Error, Lance Constable Carrot!: " + err.toString());
+        console.log("We've got an Error, Lance Constable Carrot!: " + err.toString());
+        callback(err);
         return;
       }
     });
@@ -430,7 +431,7 @@ ads1x15.prototype.readADCDifferential = function(chP, chN, pga, sps, callback) {
   }
   else
   {
-    callback("ADC is busy...");
+    callback(new Error("ADC is busy..."));
   }
 }
 
@@ -521,7 +522,7 @@ ads1x15.prototype.startContinuousConversion = function(channel, pga, sps, callba
     if (channel > 3)
     {
       self.busy = false;
-      callback( "ADS1x15: Invalid channel specified, Lance Corporal Carrot!");
+      callback(new Error("ADS1x15: Invalid channel specified, Lance Corporal Carrot!"));
       return;
     }
 
@@ -545,7 +546,7 @@ ads1x15.prototype.startContinuousConversion = function(channel, pga, sps, callba
       if (!(spsADS1115[sps]))
       {
         self.busy = false;
-        callback("ADS1x15: Invalid sps specified");
+        callback(new Error("ADS1x15: Invalid sps specified"));
         return;
       }
       else
@@ -557,7 +558,7 @@ ads1x15.prototype.startContinuousConversion = function(channel, pga, sps, callba
     if (!(pgaADS1x15[pga]))
     {
       self.busy = false;
-      callback("ADS1x15: Invalid pga specified");
+      callback(new Error("ADS1x15: Invalid pga specified"));
       return;
     }
     else
@@ -596,7 +597,8 @@ ads1x15.prototype.startContinuousConversion = function(channel, pga, sps, callba
       if(err)
       {
         self.busy = false;
-        callback("We've got an Error, Lance Constable Carrot!: " + err.toString());
+        console.log("We've got an Error, Lance Constable Carrot!: " + err.toString());
+        callback(err);
         return;
       }
     });
@@ -642,7 +644,7 @@ ads1x15.prototype.startContinuousConversion = function(channel, pga, sps, callba
   }
   else
   {
-    callback("ADC is busy...");
+    callback(new Error("ADC is busy..."));
   }
 }
 
@@ -743,7 +745,7 @@ ads1x15.prototype.startSingleEndedComparator = function(channel, thresholdHigh, 
     {
        self.busy = false;
        console.log("ADS1x15: Invalid channel specified");
-       callback("ADS1x15: Invalid channel specified");
+       callback(new Error("ADS1x15: Invalid channel specified"));
        return;
     }
 
@@ -793,7 +795,7 @@ ads1x15.prototype.startSingleEndedComparator = function(channel, thresholdHigh, 
       if (!(spsADS1015[sps]))
       {
         self.busy = false;
-        callback("ADS1x15: Invalid sps specified");
+        callback(new Error("ADS1x15: Invalid sps specified"));
         return;
       }
       config |= spsADS1015[sps];
@@ -803,7 +805,7 @@ ads1x15.prototype.startSingleEndedComparator = function(channel, thresholdHigh, 
       if (!(spsADS1115[sps]))
       {
         self.busy = false;
-        callback("ADS1x15: Invalid sps specified");
+        callback(new Error("ADS1x15: Invalid sps specified"));
         return;
       }
       config |= spsADS1115[sps];
@@ -812,7 +814,7 @@ ads1x15.prototype.startSingleEndedComparator = function(channel, thresholdHigh, 
     if (!(pgaADS1x15[pga]))
     {
       self.busy = false;
-      callback("ADS1x15: Invalid pga specified");
+      callback(new Error("ADS1x15: Invalid pga specified"));
       return;
     }
     config |= pgaADS1x15[pga];
@@ -894,7 +896,7 @@ ads1x15.prototype.startSingleEndedComparator = function(channel, thresholdHigh, 
   }
   else
   {
-    callback("ADC is busy...");
+    callback(new Error("ADC is busy..."));
   }
 }
 
@@ -975,7 +977,7 @@ ads1x15.prototype.startDifferentialComparator = function(chP, chN, thresholdHigh
       if (!(spsADS1015[sps]))
       {
         self.busy = false;
-        callback("ADS1x15: Invalid sps specified");
+        callback(new Error("ADS1x15: Invalid sps specified"));
         return;
       }
       config |= spsADS1015[sps];
@@ -985,7 +987,7 @@ ads1x15.prototype.startDifferentialComparator = function(chP, chN, thresholdHigh
       if (!(spsADS1115[sps]))
       {
         self.busy = false;
-        callback("ADS1x15: Invalid sps specified");
+        callback(new Error("ADS1x15: Invalid sps specified"));
         return;
       }
       config |= spsADS1115[sps];
@@ -995,7 +997,7 @@ ads1x15.prototype.startDifferentialComparator = function(chP, chN, thresholdHigh
     if (!(pgaADS1x15[pga]))
     {
       self.busy = false;
-       callback("ADS1x15: Invalid pga specified");
+       callback(new Error("ADS1x15: Invalid pga specified"));
        return;
     }
     config |= pgaADS1x15[pga];
@@ -1021,7 +1023,7 @@ ads1x15.prototype.startDifferentialComparator = function(chP, chN, thresholdHigh
     else
     {
       self.busy = false;
-      callback("ADS1x15: Invalid channels specified");
+      callback(new Error("ADS1x15: Invalid channels specified"));
       return;
     }
     // Set 'start single-conversion' bit to begin conversions
@@ -1080,7 +1082,7 @@ ads1x15.prototype.startDifferentialComparator = function(chP, chN, thresholdHigh
   }
   else
   {
-    callback("ADC is busy...");
+    callback(new Error("ADC is busy..."));
   }
 }
 
